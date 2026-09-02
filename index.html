@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Organização Financeira</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#718096;--line:#e5eaf1;--green:#159957;--green-bg:#e9f8ef;--red:#d64545;--red-bg:#fff0f0;--blue:#3366cc;--shadow:0 12px 30px #20304d12}
+    body[data-theme="dark"]{--bg:#111827;--card:#1f2937;--ink:#f3f4f6;--muted:#aab4c4;--line:#374151;--green:#56d98b;--green-bg:#173b2a;--red:#ff8080;--red-bg:#452326;--blue:#8eaeff;--shadow:0 12px 30px #0006}
+    body[data-theme="pink"]{--bg:#fff4f8;--card:#fff;--ink:#3d2632;--muted:#9a7182;--line:#f1d8e2;--green:#168653;--green-bg:#e9f8ef;--red:#cc4564;--red-bg:#fff0f4;--blue:#c04478;--shadow:0 12px 30px #b43f6714}
+    body[data-theme="dark"] .button,body[data-theme="dark"] .month-button{background:var(--card);color:var(--ink)}
+    body[data-theme="dark"] .finance-table input{background:#263447}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+    .app{max-width:1280px;margin:auto;padding:28px 20px 45px}.top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+    h1{margin:0 0 4px;font-size:clamp(25px,4vw,36px);letter-spacing:-.04em}.subtitle{margin:0;color:var(--muted)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}.button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 14px;font-weight:700;color:var(--ink);cursor:pointer}.button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.button:hover{filter:brightness(.97)}
+    .toolbar,.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.toolbar{padding:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+    select,input{font:inherit;border:1px solid var(--line);border-radius:9px;padding:10px 11px;background:var(--card);color:var(--ink)}select{min-width:130px}.toolbar label{font-weight:700;color:var(--muted)}
+    .metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px}.metric{padding:18px}.metric p{margin:0 0 8px;color:var(--muted);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em}.metric strong{font-size:25px}.positive{color:var(--green)}.negative{color:var(--red)}
+    .layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.8fr);gap:18px}.card{padding:18px}.card h2{font-size:18px;margin:0 0 14px}.table-wrap{overflow:auto}.finance-table{width:100%;border-collapse:collapse;min-width:700px}.finance-table th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding:11px 9px;border-bottom:2px solid var(--line)}.finance-table td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:middle}.finance-table tr:last-child td{border-bottom:0}.day{font-weight:800;color:var(--muted);width:55px}    .finance-table input{width:100%;min-width:105px;padding:8px;background:#fbfcfe}.finance-table input.income{color:var(--green);border-color:#bce8cc;background:var(--green-bg)}.finance-table input.expense{color:var(--red);border-color:#f2c0c0;background:var(--red-bg)}.finance-table input.balance-input{color:var(--blue);border-color:#b9c9f3;background:#eef3ff}.daily{font-weight:700}.balance{font-weight:800}.zero{color:#a0aabe}.summary-row{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.summary-row:last-child{border:0}.summary-row span:first-child{color:var(--muted)}.summary-row strong{font-variant-numeric:tabular-nums}.month-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}.month-button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px;cursor:pointer}.month-button.active{border-color:var(--blue);background:#eef3ff;color:var(--blue)}.month-button small{display:block;color:var(--muted);margin-top:2px}.empty{color:var(--muted);padding:22px 0;text-align:center}.footer{color:var(--muted);font-size:13px;margin-top:18px;text-align:center}
+    .currency-field{display:flex;align-items:center;border:1px solid #b9c9f3;border-radius:9px;background:#eef3ff;color:var(--blue);padding-left:10px;font-weight:700}.currency-field.healthy{border-color:#a9dfbd;background:var(--green-bg);color:var(--green)}.currency-field.danger{border-color:#efb2b2;background:var(--red-bg);color:var(--red)}.currency-field.neutral{border-color:#d7deea;background:#f7f8fb;color:var(--muted)}.currency-field input{border:0!important;background:transparent!important;color:inherit;min-width:75px;padding-left:5px}.investment-cell{display:grid;gap:4px}.investment-cell select{min-width:105px;padding:6px;font-size:12px;color:var(--muted)}
+    .charts{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.chart-card{min-width:0}.chart-card canvas{display:block;width:100%;height:260px}
+    .file-label{display:inline-block}.hidden{display:none}
+    .tabs{display:flex;gap:8px;margin-bottom:18px}.tab{border:0;background:transparent;border-bottom:2px solid transparent;padding:10px 14px;color:var(--muted);font-weight:800;cursor:pointer}.tab.active{color:var(--blue);border-color:var(--blue)}
+    .recurring-grid{display:grid;grid-template-columns:1.2fr .8fr .8fr .7fr .8fr .8fr .8fr .8fr auto;gap:10px;align-items:end}.field label{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:5px}.recurring-list{margin-top:22px}.recurring-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.recurring-item:last-child{border:0}.recurring-item small{display:block;color:var(--muted)}.delete{border:0;background:var(--red-bg);color:var(--red);border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:700}
+    .pots-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr auto;gap:10px;align-items:end}.pot-list{margin-top:22px}.pot-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid var(--line)}.pot-item:last-child{border:0}.pot-item small{display:block;color:var(--muted)}.pot-value{text-align:right}.pot-value strong{font-size:20px}.pot-actions{display:flex;gap:8px;margin-top:7px}.pots-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:18px}.pots-summary .metric{padding:15px}
+    @media(max-width:1100px){.metrics{grid-template-columns:repeat(3,1fr)}}@media(max-width:900px){.layout{grid-template-columns:1fr}.charts{grid-template-columns:1fr}.recurring-grid,.pots-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:540px){.app{padding:20px 12px}.top{display:block}.actions{margin-top:15px}.metrics,.pots-summary{grid-template-columns:repeat(2,1fr);gap:9px}.metric{padding:13px}.metric strong{font-size:20px}.toolbar{align-items:stretch}.toolbar>*{flex:1}.recurring-grid,.pots-grid{grid-template-columns:1fr}.recurring-item,.pot-item{align-items:flex-start}.pot-item{display:block}.pot-value{text-align:left;margin-top:10px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div><h1>Organização Financeira</h1><p class="subtitle">Acompanhe entradas, faturas e o saldo de cada dia.</p></div>
+      <div class="actions">
+        <label class="button file-label">Importar Excel<input id="fileInput" class="hidden" type="file" accept=".xlsx,.xls"></label>
+        <button class="button" id="exportButton">Exportar dados</button>
+        <button class="button" id="clearButton">Limpar ano</button>
+      </div>
+    </header>
+    <section class="toolbar">
+      <label for="year">Ano</label><select id="year"></select>
+      <label for="month">Mês</label><select id="month"></select>
+      <label for="theme">Visual</label><select id="theme"><option value="default">Padrão</option><option value="dark">Modo escuro</option><option value="pink">Modo rosa</option></select>
+      <button class="button primary" id="todayButton">Ir para hoje</button>
+    </section>
+    <nav class="tabs"><button class="tab active" data-tab="dashboard">Lançamentos</button><button class="tab" data-tab="recurring">Recorrentes</button><button class="tab" data-tab="pots">Caixinhas</button></nav>
+    <section id="recurringView" class="card hidden">
+      <h2>Gastos e ganhos recorrentes</h2>
+      <p class="subtitle">Cadastre uma vez e o lançamento será incluído automaticamente em todos os meses a partir do ano inicial.</p>
+      <form id="recurringForm" class="recurring-grid">
+        <div class="field"><label for="recDescription">Descrição</label><input id="recDescription" required placeholder="Ex.: Salário"></div>
+        <div class="field"><label for="recType">Tipo</label><select id="recType"><option value="income">Ganho / entrada</option><option value="expense">Gasto / saída</option><option value="investment">Investimento</option></select></div>
+        <div class="field"><label for="recPot">Caixinha destino</label><select id="recPot"><option value="">Nenhuma</option></select></div>
+        <div class="field"><label for="recDay">Dia do mês</label><input id="recDay" type="number" min="1" max="31" value="5" required></div>
+        <div class="field"><label for="recAmount">Valor (R$)</label><input id="recAmount" inputmode="decimal" placeholder="0,00" required></div>
+        <div class="field"><label for="recStartMonth">Mês inicial</label><select id="recStartMonth"></select></div>
+        <div class="field"><label for="recStart">Ano inicial</label><input id="recStart" type="number" min="2000" max="2100" value="2026" required></div>
+        <div class="field"><label for="recEndMonth">Mês final</label><select id="recEndMonth"><option value="">Sem término</option></select></div>
+        <div class="field"><label for="recEnd">Ano final</label><input id="recEnd" type="number" min="2000" max="2100" placeholder="Opcional"></div>
+        <input id="recEditIndex" type="hidden" value="">
+        <button class="button primary" id="recSubmit" type="submit">Adicionar</button><button class="button hidden" id="recCancel" type="button">Cancelar</button>
+      </form>
+      <div id="recurringList" class="recurring-list"></div>
+    </section>
+    <section id="potsView" class="card hidden">
+      <h2>Patrimônio e caixinhas</h2>
+      <p class="subtitle">Use o percentual do CDI da caixinha e mantenha o CDI anual de referência atualizado para obter uma projeção mais fiel.</p>
+      <div class="field" style="max-width:240px;margin:14px 0"><label for="cdiAnnual">CDI anual de referência (%)</label><input id="cdiAnnual" type="number" min="0" max="100" step="0.01" value="15"></div>
+      <form id="potForm" class="pots-grid">
+        <div class="field"><label for="potName">Nome</label><input id="potName" required placeholder="Ex.: Reserva de emergência"></div>
+        <div class="field"><label for="potBalance">Saldo na data (R$)</label><input id="potBalance" inputmode="decimal" placeholder="0,00" required></div>
+        <div class="field"><label for="potRate">% do CDI</label><input id="potRate" type="number" min="0" max="300" step="0.01" value="100" required></div>
+        <div class="field"><label for="potDate">Data de referência</label><input id="potDate" type="date" required></div>
+        <input id="potEditIndex" type="hidden" value="">
+        <button class="button primary" id="potSubmit" type="submit">Adicionar</button>
+      </form>
+      <div class="pots-summary">
+        <div class="card metric"><p>Patrimônio total</p><strong id="potsTotal">R$ 0,00</strong></div>
+        <div class="card metric"><p>Rendimento estimado</p><strong class="positive" id="potsYield">R$ 0,00</strong></div>
+        <div class="card metric"><p>Rendimento diário</p><strong class="positive" id="potsDailyYield">R$ 0,00</strong></div>
+        <div class="card metric"><p>Rendimento mensal</p><strong class="positive" id="potsMonthlyYield">R$ 0,00</strong></div>
+        <div class="card metric"><p>Caixinhas</p><strong id="potsCount">0</strong></div>
+      </div>
+      <div id="potList" class="pot-list"></div>
+    </section>
+    <section id="dashboardView">
+    <section class="metrics">
+      <div class="card metric"><p>Saldo atual</p><strong id="currentBalance">R$ 0,00</strong></div>
+      <div class="card metric"><p>Entradas no mês</p><strong class="positive" id="monthIncome">R$ 0,00</strong></div>
+      <div class="card metric"><p>Saídas no mês</p><strong class="negative" id="monthExpense">R$ 0,00</strong></div>
+      <div class="card metric"><p>Investimentos</p><strong class="positive" id="monthInvestment">R$ 0,00</strong></div>
+      <div class="card metric"><p>Resultado do mês</p><strong id="monthResult">R$ 0,00</strong></div>
+    </section>
+    <div class="layout">
+      <section class="card">
+        <h2 id="tableTitle">Lançamentos</h2>
+        <div class="table-wrap"><table class="finance-table">
+          <thead><tr><th>Dia</th><th>Entrada (R$)</th><th>Fatura / saída (R$)</th><th>Investido (R$)</th><th>Movimento do dia</th><th>Saldo diário</th></tr></thead>
+          <tbody id="entriesBody"></tbody>
+        </table></div>
+      </section>
+      <aside class="card">
+        <h2>Resumo anual / projeção</h2><div id="yearSummary"></div>
+        <h2 style="margin-top:24px">Meses</h2><div class="month-list" id="monthList"></div>
+      </aside>
+    </div>
+    <section class="charts">
+      <div class="card chart-card"><h2>Movimentação por mês</h2><canvas id="flowChart" width="600" height="260" aria-label="Gráfico de entradas, saídas e investimentos"></canvas></div>
+      <div class="card chart-card"><h2>Evolução do saldo</h2><canvas id="balanceChart" width="600" height="260" aria-label="Gráfico de evolução do saldo"></canvas></div>
+    </section>
+    </section>
+    <p class="footer">Os dados ficam salvos automaticamente neste navegador. Use “Exportar dados” para criar um backup.</p>
+  </main>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script>
+    const months=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const key='organizacao-financeira-v1';
+    let data=JSON.parse(localStorage.getItem(key)||'{}');
+    const yearEl=document.querySelector('#year'), monthEl=document.querySelector('#month'), body=document.querySelector('#entriesBody');
+    const themeEl=document.querySelector('#theme');
+    const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0);
+    const num=v=>{const n=Number(String(v??'').replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?n:0};
+    function yearData(y){return data[y]||(data[y]={});}
+    function monthData(y,m){const yd=yearData(y);return yd[m]||(yd[m]={});}
+    function daysIn(y,m){return new Date(y,m+1,0).getDate()}
+    function save(){localStorage.setItem(key,JSON.stringify(data))}
+    function applyTheme(theme){document.body.dataset.theme=theme==='default'?'':theme;themeEl.value=theme;localStorage.setItem('organizacao-financeira-theme',theme)}
+    function recurringFor(y,m,d){return (data.recurring||[]).filter(r=>{const start=(Number(r.start||2000)*12)+Number(r.startMonth||0),end=r.end&&r.endMonth!==''?(Number(r.end)*12)+Number(r.endMonth):Infinity,current=y*12+m;return r.active!==false&&current>=start&&current<=end&&Number(r.day)===d}).reduce((acc,r)=>{acc[r.type]+=num(r.amount);return acc},{income:0,expense:0,investment:0})}
+    function effectiveRow(y,m,d){const raw=monthData(y,m)[d]||{},rec=recurringFor(y,m,d);return{income:num(raw.income)+rec.income,expense:num(raw.expense)+rec.expense,investment:num(raw.investment)+rec.investment}}
+    function setup(){
+      data.pots=(data.pots||[]);data.pots.forEach((p,i)=>{if(!p.id)p.id=`pot-${i}-${Date.now()}`});document.querySelector('#cdiAnnual').value=data.cdiAnnual||15;refreshRecurringPots();
+      const current=new Date().getFullYear(); const years=Object.keys(data).map(Number).filter(Boolean);
+      [...new Set([2024,2025,2026,current,current+1,...years])].sort().forEach(y=>yearEl.add(new Option(y,y)));
+      months.forEach((m,i)=>monthEl.add(new Option(m,i))); yearEl.value=current; monthEl.value=new Date().getMonth(); applyTheme(localStorage.getItem('organizacao-financeira-theme')||'default');
+      render();
+    }
+    function render(){
+      const y=Number(yearEl.value), m=Number(monthEl.value), md=monthData(y,m), days=daysIn(y,m); let running=balanceBefore(y,m), income=0, expense=0, investment=0;
+      body.innerHTML='';
+      for(let d=1;d<=days;d++){const row=effectiveRow(y,m,d),raw=md[d]||{};const ent=row.income, out=row.expense, invested=row.investment, daily=ent-out-invested;running+=daily;income+=ent;expense+=out;investment+=invested;
+        const override=Boolean(md[d] && Object.prototype.hasOwnProperty.call(md[d],'balanceOverride')), balanceValue=override?num(md[d].balanceOverride):running;
+        const health=balanceValue<0?'danger':balanceValue>0?'healthy':'neutral', healthText=balanceValue<0?'Saldo negativo':balanceValue>0?'Saldo positivo':'Saldo zerado';
+        const tr=document.createElement('tr');tr.innerHTML=`<td class="day">${String(d).padStart(2,'0')}</td><td><input class="income" inputmode="decimal" placeholder="0,00" value="${ent||''}" data-day="${d}" data-kind="income"></td><td><input class="expense" inputmode="decimal" placeholder="0,00" value="${out||''}" data-day="${d}" data-kind="expense"></td><td><div class="investment-cell"><input class="income" inputmode="decimal" placeholder="0,00" value="${invested||''}" data-day="${d}" data-kind="investment">${potOptions(raw.investmentPot,d)}</div></td><td class="daily ${daily<0?'negative':daily>0?'positive':'zero'}">${money(daily)}</td><td><div class="currency-field ${health}" title="${healthText}"><span>R$</span><input class="balance-input" inputmode="decimal" placeholder="${money(running)}" value="${balanceValue.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}" data-day="${d}" data-kind="balanceOverride"></div></td></tr>`;body.appendChild(tr);
+        if(override)running=balanceValue;
+      }
+      document.querySelector('#tableTitle').textContent=`${months[m]} de ${y}`;
+      document.querySelector('#monthIncome').textContent=money(income);document.querySelector('#monthExpense').textContent=money(expense);document.querySelector('#monthInvestment').textContent=money(investment);document.querySelector('#monthResult').textContent=money(income-expense-investment);document.querySelector('#monthResult').className=income-expense-investment<0?'negative':'positive';
+      const annual=totals(y), selectedBalance=balanceBefore(y,m)+income-expense-investment;document.querySelector('#currentBalance').textContent=money(selectedBalance);
+      document.querySelector('#yearSummary').innerHTML=`<div class="summary-row"><span>Entradas</span><strong class="positive">${money(annual.income)}</strong></div><div class="summary-row"><span>Saídas</span><strong class="negative">${money(annual.expense)}</strong></div><div class="summary-row"><span>Investimentos</span><strong class="positive">${money(annual.investment)}</strong></div><div class="summary-row"><span>Economia</span><strong class="${annual.income-annual.expense-annual.investment<0?'negative':'positive'}">${money(annual.income-annual.expense-annual.investment)}</strong></div>`;
+      document.querySelector('#monthList').innerHTML=months.map((name,i)=>{const t=totals(y,i), r=t.income-t.expense-t.investment;return `<button class="month-button ${i===m?'active':''}" data-month="${i}">${name}<small class="${r<0?'negative':'positive'}">${money(r)}</small></button>`}).join('');
+      renderCharts(y);
+      body.querySelectorAll('input,select').forEach(input=>input.addEventListener('change',()=>{const d=input.dataset.day,k=input.dataset.kind;const md2=monthData(y,m);md2[d]=md2[d]||{};if(k==='balanceOverride'){if(input.value.trim()==='')delete md2[d].balanceOverride;else md2[d].balanceOverride=num(input.value)}else if(k==='investmentPot'){syncInvestmentDeposit(y,m,Number(d),num(md2[d].investment),input.value);md2[d].investmentPot=input.value}else{const rec=recurringFor(y,m,Number(d));md2[d][k]=Math.max(0,num(input.value)-rec[k]);if(k==='investment')syncInvestmentDeposit(y,m,Number(d),md2[d][k],md2[d].investmentPot)}save();render()}));
+      document.querySelectorAll('.month-button').forEach(b=>b.addEventListener('click',()=>{monthEl.value=b.dataset.month;render()}));
+    }
+    function totals(y,m){let income=0,expense=0,investment=0;const list=m===undefined?months.map((_,i)=>i):[m];list.forEach(i=>{for(let d=1;d<=daysIn(y,i);d++){const r=effectiveRow(y,i,d);income+=r.income;expense+=r.expense;investment+=r.investment}});return{income,expense,investment}}
+    function chartCanvas(id){const canvas=document.querySelector('#'+id),rect=canvas.getBoundingClientRect(),ratio=window.devicePixelRatio||1;canvas.width=Math.max(1,rect.width*ratio);canvas.height=260*ratio;const ctx=canvas.getContext('2d');ctx.scale(ratio,ratio);return{ctx,w:rect.width,h:260}}
+    function renderCharts(y){const labels=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],series=months.map((_,i)=>totals(y,i)),style=getComputedStyle(document.body),muted=style.getPropertyValue('--muted'),line=style.getPropertyValue('--line'),green=style.getPropertyValue('--green'),red=style.getPropertyValue('--red'),blue=style.getPropertyValue('--blue');
+      const flow=chartCanvas('flowChart'),ctx=flow.ctx,w=flow.w,h=flow.h,left=42,right=12,top=22,bottom=35,plotW=w-left-right,plotH=h-top-bottom,max=Math.max(1,...series.map(s=>Math.max(s.income,s.expense,s.investment))),barW=Math.max(2,plotW/12/4);
+      ctx.clearRect(0,0,w,h);ctx.font='11px system-ui';ctx.textAlign='center';ctx.strokeStyle=line;ctx.fillStyle=muted;for(let i=0;i<5;i++){const yPos=top+plotH*i/4;ctx.beginPath();ctx.moveTo(left,yPos);ctx.lineTo(w-right,yPos);ctx.stroke();ctx.fillText(money(max*(1-i/4)).replace('R$ ',''),left-20,yPos+4)}
+      series.forEach((s,i)=>{const x=left+plotW*(i+.5)/12;[s.income,s.expense,s.investment].forEach((value,j)=>{ctx.fillStyle=[green,red,blue][j];const height=value/max*plotH;ctx.fillRect(x-barW*1.5+j*barW,top+plotH-height,barW-2,height)});ctx.fillStyle=muted;ctx.fillText(labels[i],x,h-12)});
+      ctx.textAlign='left';[['Entrada',green],['Saída',red],['Investido',blue]].forEach((item,i)=>{ctx.fillStyle=item[1];ctx.fillRect(left+i*85,5,10,10);ctx.fillStyle=muted;ctx.fillText(item[0],left+14+i*85,14)});
+      const balance=chartCanvas('balanceChart'),bctx=balance.ctx,bw=balance.w,bh=balance.h,bLeft=42,bRight=12,bTop=22,bBottom=35,bPlotW=bw-bLeft-bRight,bPlotH=bh-bTop-bBottom,values=[];let current=balanceBefore(y,0);series.forEach(s=>{current+=s.income-s.expense-s.investment;values.push(current)});const min=Math.min(0,...values),maxBalance=Math.max(1,...values),range=maxBalance-min||1;
+      bctx.clearRect(0,0,bw,bh);bctx.font='11px system-ui';bctx.textAlign='center';bctx.strokeStyle=line;bctx.fillStyle=muted;for(let i=0;i<5;i++){const yPos=bTop+bPlotH*i/4;const value=maxBalance-range*i/4;bctx.beginPath();bctx.moveTo(bLeft,yPos);bctx.lineTo(bw-bRight,yPos);bctx.stroke();bctx.fillText(money(value).replace('R$ ',''),bLeft-20,yPos+4)}bctx.beginPath();values.forEach((value,i)=>{const x=bLeft+bPlotW*(i+.5)/12,yPos=bTop+(maxBalance-value)/range*bPlotH;i?bctx.lineTo(x,yPos):bctx.moveTo(x,yPos);bctx.fillStyle=muted;bctx.fillText(labels[i],x,bh-12)});bctx.strokeStyle=blue;bctx.lineWidth=3;bctx.stroke();values.forEach((value,i)=>{const x=bLeft+bPlotW*(i+.5)/12,yPos=bTop+(maxBalance-value)/range*bPlotH;bctx.fillStyle=blue;bctx.beginPath();bctx.arc(x,yPos,4,0,Math.PI*2);bctx.fill()});
+    }
+    function balanceBefore(y,m){let balance=0;Object.keys(data).map(Number).filter(Number.isFinite).sort((a,b)=>a-b).forEach(year=>{if(year<y){for(let month=0;month<12;month++)for(let day=1;day<=daysIn(year,month);day++){const r=effectiveRow(year,month,day);balance+=r.income-r.expense-r.investment}}else if(year===y){for(let month=0;month<m;month++)for(let day=1;day<=daysIn(year,month);day++){const r=effectiveRow(year,month,day);balance+=r.income-r.expense-r.investment}}});return balance}
+    function escapeHtml(value){return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+    function businessDaysElapsed(start,now){if(!start||now<=start)return 0;const dayMs=24*60*60*1000,today=new Date(now.getFullYear(),now.getMonth(),now.getDate()),startDay=new Date(start.getFullYear(),start.getMonth(),start.getDate());let days=0;for(let cursor=new Date(startDay);cursor<today;cursor.setDate(cursor.getDate()+1)){const weekday=cursor.getDay();if(weekday!==0&&weekday!==6)days++}const weekday=today.getDay();if(weekday!==0&&weekday!==6)days+=Math.min(1,Math.max(0,(now-today)/dayMs));return days}
+    function recurringPotDeposits(p,now,withYield){return (data.recurring||[]).filter(r=>r.active!==false&&r.type==='investment'&&r.potId===p.id).reduce((sum,r)=>{const start=(Number(r.start||2000)*12)+Number(r.startMonth||0),end=r.end&&r.endMonth!==''?(Number(r.end)*12)+Number(r.endMonth):Infinity,current=now.getFullYear()*12+now.getMonth(),potStart=new Date(`${p.date}T00:00:00`),rate=annualPotRate(p)/100;let result=0;for(let period=Math.max(start,Number(p.date.slice(0,4))*12+Number(p.date.slice(5,7))-1);period<=Math.min(end,current);period++){const year=Math.floor(period/12),month=period%12,day=Number(r.day);if(day<=daysIn(year,month)){const date=new Date(year,month,day);if(date>=potStart&&date<=now){const amount=num(r.amount);result+=withYield?amount*Math.pow(1+rate,businessDaysElapsed(date,now)/252):amount}}}return sum+result},0)}
+    function annualPotRate(p){return Math.max(0,num(data.cdiAnnual||15))*Math.max(0,num(p.rate??p.cdiPercent??100))/100}
+    function potValue(p,now=new Date()){const rate=annualPotRate(p)/100,start=new Date(`${p.date}T00:00:00`),base=num(p.balance)*Math.pow(1+rate,businessDaysElapsed(start,now)/252),deposits=(p.deposits||[]).reduce((sum,d)=>sum+num(d.amount)*Math.pow(1+rate,businessDaysElapsed(new Date(`${d.date}T00:00:00`),now)/252),0);return base+deposits+recurringPotDeposits(p,now,true)}
+    function potYieldSince(p,from,to=new Date()){const rate=annualPotRate(p)/100,period=Math.max(0,businessDaysElapsed(from,to));return num(p.balance)*(Math.pow(1+rate,period/252)-1)}
+    function potOptions(selected,day){const pots=data.pots||[];return `<select data-kind="investmentPot" data-day="${day}" aria-label="Caixinha do investimento"><option value="">Não enviar para caixinha</option>${pots.map(p=>`<option value="${p.id}" ${String(selected)===String(p.id)?'selected':''}>${escapeHtml(p.name)}</option>`).join('')}</select>`}
+    function syncInvestmentDeposit(y,m,d,amount,potId){const source=`${y}-${m}-${d}`;data.pots=(data.pots||[]).map(p=>({...p,deposits:(p.deposits||[]).filter(item=>item.source!==source)}));const p=data.pots.find(item=>item.id===potId);if(p){p.deposits=p.deposits||[];if(amount>0)p.deposits.push({source,amount,date:`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`})}}
+    function renderPots(){const list=document.querySelector('#potList'),pots=data.pots||[],now=new Date();pots.forEach((p,i)=>{if(!p.id)p.id=`pot-${i}-${Date.now()}`});refreshRecurringPots();let total=0,principal=0,dailyYield=0,monthlyYield=0;pots.forEach(p=>{const value=potValue(p,now),initial=num(p.balance)+(p.deposits||[]).reduce((sum,d)=>sum+num(d.amount),0)+recurringPotDeposits(p,now,false),rate=annualPotRate(p)/100;total+=value;principal+=initial;dailyYield+=value*(Math.pow(1+rate,1/252)-1);monthlyYield+=value*(Math.pow(1+rate,21/252)-1)});list.innerHTML=pots.length?pots.map((p,i)=>{const value=potValue(p,now),initial=num(p.balance)+(p.deposits||[]).reduce((sum,d)=>sum+num(d.amount),0)+recurringPotDeposits(p,now,false);return `<div class="pot-item"><div><strong>${escapeHtml(p.name)}</strong><small>${num(p.rate??p.cdiPercent??100).toLocaleString('pt-BR',{maximumFractionDigits:2})}% do CDI · CDI de referência ${num(data.cdiAnnual||15).toLocaleString('pt-BR',{maximumFractionDigits:2})}% · saldo em ${new Date(`${p.date}T00:00:00`).toLocaleDateString('pt-BR')}</small><div class="pot-actions"><button class="button" data-edit-pot="${i}">Editar</button><button class="delete" data-pot="${i}">Excluir</button></div></div><div class="pot-value"><strong class="positive">${money(value)}</strong><small>+ ${money(value-initial)} estimados</small></div></div>`}).join(''):'<p class="empty">Nenhuma caixinha cadastrada.</p>';document.querySelector('#potsTotal').textContent=money(total);document.querySelector('#potsYield').textContent=money(total-principal);document.querySelector('#potsDailyYield').textContent=money(dailyYield);document.querySelector('#potsMonthlyYield').textContent=money(monthlyYield);document.querySelector('#potsCount').textContent=pots.length;list.querySelectorAll('[data-pot]').forEach(b=>b.addEventListener('click',()=>{data.pots.splice(Number(b.dataset.pot),1);save();renderPots();render()}));list.querySelectorAll('[data-edit-pot]').forEach(b=>b.addEventListener('click',()=>editPot(Number(b.dataset.editPot))))}
+    function refreshRecurringPots(){const select=document.querySelector('#recPot'),selected=select.value;select.innerHTML='<option value="">Nenhuma</option>'+(data.pots||[]).map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');select.value=selected}
+    function resetPotForm(){document.querySelector('#potForm').reset();document.querySelector('#potEditIndex').value='';document.querySelector('#potRate').value=100;document.querySelector('#potDate').value=new Date().toISOString().slice(0,10);document.querySelector('#potSubmit').textContent='Adicionar'}
+    function editPot(index){const p=data.pots[index];document.querySelector('#potEditIndex').value=index;document.querySelector('#potName').value=p.name;document.querySelector('#potBalance').value=p.balance;document.querySelector('#potRate').value=p.rate;document.querySelector('#potDate').value=p.date;document.querySelector('#potSubmit').textContent='Salvar alteração';document.querySelector('#potName').focus()}
+    yearEl.addEventListener('change',render);monthEl.addEventListener('change',render);
+    themeEl.addEventListener('change',()=>applyTheme(themeEl.value));
+    document.querySelector('#cdiAnnual').addEventListener('change',()=>{data.cdiAnnual=Math.max(0,num(document.querySelector('#cdiAnnual').value));save();renderPots()});
+    document.querySelector('#todayButton').addEventListener('click',()=>{const d=new Date();if(![...yearEl.options].some(o=>Number(o.value)===d.getFullYear()))yearEl.add(new Option(d.getFullYear(),d.getFullYear()));yearEl.value=d.getFullYear();monthEl.value=d.getMonth();render()});
+    document.querySelector('#clearButton').addEventListener('click',()=>{if(confirm(`Apagar todos os lançamentos de ${yearEl.value}?`)){delete data[yearEl.value];save();render()}});
+    document.querySelector('#exportButton').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='organizacao-financeira-backup.json';a.click();URL.revokeObjectURL(a.href)});
+    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab));document.querySelector('#dashboardView').classList.toggle('hidden',tab.dataset.tab!=='dashboard');document.querySelector('#recurringView').classList.toggle('hidden',tab.dataset.tab!=='recurring');document.querySelector('#potsView').classList.toggle('hidden',tab.dataset.tab!=='pots');if(tab.dataset.tab==='recurring')renderRecurring();if(tab.dataset.tab==='pots')renderPots()}));
+    function renderRecurring(){refreshRecurringPots();const list=document.querySelector('#recurringList'),items=data.recurring||[];list.innerHTML=items.length?items.map((r,i)=>{const start=`${months[Number(r.startMonth||0)]}/${r.start||2000}`,end=r.end&&r.endMonth!==''?` até ${months[Number(r.endMonth)]}/${r.end}`:' em diante',pot=r.type==='investment'&&r.potId?(data.pots||[]).find(p=>p.id===r.potId):null;return `<div class="recurring-item"><div><strong>${escapeHtml(r.description)}</strong><small>${r.type==='income'?'Entrada':r.type==='investment'?'Investimento':'Saída'} de ${money(r.amount)} todo dia ${r.day}, de ${start}${pot?' · '+escapeHtml(pot.name):''}${end}</small></div><div><button class="button" data-edit-rec="${i}">Editar</button> <button class="delete" data-rec="${i}">Excluir</button></div></div>`}).join(''):'<p class="empty">Nenhum lançamento recorrente cadastrado.</p>';list.querySelectorAll('[data-rec]').forEach(b=>b.addEventListener('click',()=>{data.recurring.splice(Number(b.dataset.rec),1);save();renderRecurring();render()}));list.querySelectorAll('[data-edit-rec]').forEach(b=>b.addEventListener('click',()=>editRecurring(Number(b.dataset.editRec))))}
+    function editRecurring(index){const r=data.recurring[index];document.querySelector('#recEditIndex').value=index;document.querySelector('#recDescription').value=r.description;document.querySelector('#recType').value=r.type;document.querySelector('#recPot').value=r.potId||'';document.querySelector('#recDay').value=r.day;document.querySelector('#recAmount').value=r.amount;document.querySelector('#recStartMonth').value=Number(r.startMonth||0);document.querySelector('#recStart').value=r.start||2000;document.querySelector('#recEndMonth').value=r.endMonth===undefined||r.endMonth===null?'':r.endMonth;document.querySelector('#recEnd').value=r.end||'';document.querySelector('#recSubmit').textContent='Salvar alteração';document.querySelector('#recCancel').classList.remove('hidden');document.querySelector('#recDescription').focus()}
+    function resetRecurringForm(){document.querySelector('#recurringForm').reset();document.querySelector('#recEditIndex').value='';document.querySelector('#recDay').value=5;document.querySelector('#recStart').value=new Date().getFullYear();document.querySelector('#recStartMonth').value=new Date().getMonth();document.querySelector('#recSubmit').textContent='Adicionar';document.querySelector('#recCancel').classList.add('hidden')}
+    months.forEach((month,i)=>document.querySelector('#recStartMonth').add(new Option(month,i))); document.querySelector('#recStartMonth').value=new Date().getMonth();
+    months.forEach((month,i)=>document.querySelector('#recEndMonth').add(new Option(month,i)));
+    document.querySelector('#recurringForm').addEventListener('submit',e=>{e.preventDefault();data.recurring=data.recurring||[];const endMonth=document.querySelector('#recEndMonth').value,endYear=document.querySelector('#recEnd').value,index=document.querySelector('#recEditIndex').value,r={description:document.querySelector('#recDescription').value.trim(),type:document.querySelector('#recType').value,potId:document.querySelector('#recPot').value||null,day:Number(document.querySelector('#recDay').value),amount:num(document.querySelector('#recAmount').value),start:Number(document.querySelector('#recStart').value),startMonth:Number(document.querySelector('#recStartMonth').value),end:endYear?Number(endYear):null,endMonth:endMonth===''?'':Number(endMonth),active:true};if(index==='')data.recurring.push(r);else data.recurring[Number(index)]=r;save();resetRecurringForm();renderRecurring();render()});
+    document.querySelector('#recCancel').addEventListener('click',resetRecurringForm);
+    document.querySelector('#potForm').addEventListener('submit',e=>{e.preventDefault();data.pots=data.pots||[];const index=document.querySelector('#potEditIndex').value,old=index===''?null:data.pots[Number(index)],p={id:old?.id||`pot-${Date.now()}`,name:document.querySelector('#potName').value.trim(),balance:num(document.querySelector('#potBalance').value),rate:num(document.querySelector('#potRate').value),date:document.querySelector('#potDate').value,deposits:old?.deposits||[]};if(!p.name||!p.date)return;if(index==='')data.pots.push(p);else data.pots[Number(index)]=p;save();resetPotForm();renderPots();render()});
+    document.querySelector('#fileInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(!window.XLSX)throw Error('Biblioteca de Excel indisponível');const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});let imported=0;wb.SheetNames.filter(n=>/^\d{4}$/.test(n)).forEach(name=>{const y=Number(name),rows=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:''});for(let m=0;m<12;m++){const base=m*7;const md=monthData(y,m);for(let r=1;r<33&&r<rows.length;r++){const row=rows[r],day=Number(row[base]);if(day){const income=num(row[base+1]),expense=num(row[base+2]);if(income||expense){md[day]={income,expense};imported++}}}}});save();if(imported){if(![...yearEl.options].some(o=>Number(o.value)===2026))yearEl.add(new Option(2026,2026));render();alert(`${imported} lançamentos importados com sucesso.`)}else alert('Nenhum lançamento encontrado. Confira se a planilha possui abas nomeadas como 2024, 2025 ou 2026.')}catch(err){alert('Não foi possível importar a planilha: '+err.message)}e.target.value=''});
+    resetPotForm();setInterval(()=>{if(!document.querySelector('#potsView').classList.contains('hidden'))renderPots()},1000);
+    setup();
+  </script>
+</body>
+</html>
